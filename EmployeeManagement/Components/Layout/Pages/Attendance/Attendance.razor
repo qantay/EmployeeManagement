@@ -1,0 +1,51 @@
+@page "/Attendance"
+@rendermode InteractiveServer
+@using System.Collections
+@using EmployeeManagement.Models
+@using EmployeeManagement.Components.Services.Attendance
+@using Org.BouncyCastle.Crypto.Engines
+@inject IAttendanceService AttendanceService
+<h3>Attendance</h3>
+@if (attendances != null)
+{
+    <a href="/Attendance/create" class="btn btn-primary">Create</a>
+    <table class="table table-striped m-4">
+        <thead>
+        <tr>
+            <td>Id</td>
+            <td>WorkDate</td>
+            <td>Status</td>
+            <td>Employee</td>
+            <td>Id</td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var attendance in attendances)
+        {
+            <tr>
+                <td>@attendance.Id</td>
+                <td>@attendance.WorkDate</td>
+                <td>@attendance.Status</td>
+                <td>@attendance.Employee?.FullName</td>
+                <td>
+                    <a href="/Attendance/edit/@attendance.Id" class="btn btn-secondary">Edit</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Models.Attendance>? attendances;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAttendances();
+    }
+
+    private async Task LoadAttendances()
+    {
+        attendances = await AttendanceService.GetAllAttendancesAsync();
+    }
+
+}

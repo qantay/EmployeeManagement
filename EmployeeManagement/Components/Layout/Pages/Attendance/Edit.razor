@@ -1,0 +1,69 @@
+@page "/Attendance/Edit/{Id:int}"
+@rendermode InteractiveServer
+@using EmployeeManagement.Components.Models
+@using EmployeeManagement.Components.Services.
+@using EmployeeManagement.Components.Services.Attendance
+@using EmployeeManagement.Components.Services.Employee
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Microsoft.AspNetCore.Components.Forms
+@inject IAttendanceService AttendanceService
+@inject IEmployeeService EmployeeService
+@inject NavigationManager Navigation
+<h3>Edit</h3>
+<EditForm Model="attendance" FormName="updateAttendance" OnValidSubmit="HandleSaveAttendance">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group mb-3">
+        <label>Work Date</label>
+        <InputDate @bind-Value="attendance.WorkDate" class="form-control" />
+        <ValidationMessage For="@(() => attendance.WorkDate)" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Status</label>
+        <InputSelect @bind-Value="attendance.Status" class="form-control">
+            <option value="">-- Select Status --</option>
+            <option value="0">Present</option>
+            <option value="1">Absent</option>
+            <option value="2">Late</option>
+            <option value="3">Leave</option>
+        </InputSelect>
+        <ValidationMessage For="@(() => attendance.Status)" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Employee</label>
+        <InputSelect @bind-Value="attendance.EmId" class="form-control">
+            <option value="0">-- Select Employee --</option>
+            @if (_employees != null)
+            {
+                foreach (var emp in _employees)
+                {
+                    <option value="@emp.Id">@emp.FullName</option>
+                }
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => attendance.EmId)" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Attendance</button>
+    <a href="/Attendance" class="btn btn-secondary">Cancel</a>
+</EditForm>
+
+@code {
+    [Parameter]public int Id { get; set; }
+
+    private Attendance attendance;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        attendance = await AttendanceService.GetAttendanceByIdAsync(Id);
+    }
+    private async Task HandleSaveAttendance()
+    {
+        attendance.Id = Id;
+        await AttendanceService.UpdateAttendanceAsync(attendance);
+        Navigation.NavigateTo("/Attendance");
+    }
+}
