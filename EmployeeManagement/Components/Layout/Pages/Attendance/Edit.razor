@@ -1,7 +1,6 @@
 @page "/Attendance/Edit/{Id:int}"
 @rendermode InteractiveServer
 @using EmployeeManagement.Components.Models
-@using EmployeeManagement.Components.Services.
 @using EmployeeManagement.Components.Services.Attendance
 @using EmployeeManagement.Components.Services.Employee
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
@@ -54,7 +53,8 @@
 @code {
     [Parameter]public int Id { get; set; }
 
-    private Attendance attendance;
+    private Models.Attendance attendance;
+    private Models.Employee[] _employees;
     
     protected override async Task OnInitializedAsync()
     {
